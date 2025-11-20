@@ -15,22 +15,25 @@ class Stock extends BaseController
 {
   public function advance()
   {
-    // Run the stock:advance CLI command from the web UI
-    $spark = escapeshellarg(PHP_BINARY) . ' ' . escapeshellarg(ROOTPATH . 'spark') . ' stock:advance';
     $message = 'Stock advance triggered.';
+    // Prefer running via Commands service (works without shell_exec)
     try {
+      $commands = service('commands');
+      $commands->run('stock:advance', []);
+      $message = 'Stock advance completed. Check logs for full details.';
+    } catch (\Throwable $e) {
+      log_message('error', 'stock:advance via Commands failed: ' . $e->getMessage());
+      // Fallback to shell_exec if available
+      $spark = escapeshellarg(PHP_BINARY) . ' ' . escapeshellarg(ROOTPATH . 'spark') . ' stock:advance';
       if (function_exists('shell_exec')) {
         $output = shell_exec($spark);
-        $message .= ' Check logs for full details.';
         if ($output) {
           log_message('info', 'stock:advance output: ' . trim($output));
         }
+        $message = 'Stock advance executed via shell. Check logs for details.';
       } else {
-        $message = 'Unable to run advance: shell_exec is disabled on this server.';
+        $message = 'Stock advance failed: unable to run command in this environment.';
       }
-    } catch (\Throwable $e) {
-      $message = 'Stock advance failed: ' . $e->getMessage();
-      log_message('error', $message);
     }
 
     return redirect()->back()->with('message', $message);

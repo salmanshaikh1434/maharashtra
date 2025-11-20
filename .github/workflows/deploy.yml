@@ -1,0 +1,43 @@
+name: Deploy CodeIgniter App to Hostinger with Migration
+
+on:
+  push:
+    branches:
+      - dev   # change to main if needed
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      # Install Composer Dependencies (for CI4)
+      - name: Install Composer dependencies
+        run: |
+          composer install --no-dev --optimize-autoloader
+
+      # Deploy to Hostinger via SSH (rsync over SSH)
+      - name: Deploy via SSH
+        uses: easingthemes/ssh-deploy@v2.2.11
+        env:
+          SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
+          REMOTE_HOST: ${{ secrets.REMOTE_HOST }}
+          REMOTE_USER: ${{ secrets.REMOTE_USER }}
+          REMOTE_PORT: ${{ secrets.REMOTE_PORT }}
+          SOURCE: "./"
+          TARGET: ${{ secrets.REMOTE_DIR }}
+          ARGS: "-rltgoDzvO --delete"
+
+      # Run CodeIgniter 4 Migrations on Hostinger
+      - name: Run CI4 Migrations
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.REMOTE_HOST }}
+          username: ${{ secrets.REMOTE_USER }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          port: ${{ secrets.REMOTE_PORT }}
+          script: |
+            cd /home/u251913093/domains/clones.fun/public_html/maharashtra/
+            php spark migrate --all

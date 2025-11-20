@@ -16,13 +16,12 @@ class Stock extends BaseController
   public function advance()
   {
     $message = 'Stock advance triggered.';
-    // Prefer running via Commands service (works without shell_exec)
     try {
-      $commands = service('commands');
-      $commands->run('stock:advance', []);
-      $message = 'Stock advance completed. Check logs for full details.';
+      $runner = new \App\Commands\AdvanceStock();
+      $summary = $runner->advance(false);
+      $message = 'Stock advance completed. ' . $summary;
     } catch (\Throwable $e) {
-      log_message('error', 'stock:advance via Commands failed: ' . $e->getMessage());
+      log_message('error', 'stock:advance via web failed: ' . $e->getMessage());
       // Fallback to shell_exec if available
       $spark = escapeshellarg(PHP_BINARY) . ' ' . escapeshellarg(ROOTPATH . 'spark') . ' stock:advance';
       if (function_exists('shell_exec')) {

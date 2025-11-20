@@ -3,7 +3,7 @@ name: Deploy CodeIgniter App to Hostinger with Migration
 on:
   push:
     branches:
-      - dev   # change to main if needed
+      - main  # change to main if needed
 
 jobs:
   deploy:

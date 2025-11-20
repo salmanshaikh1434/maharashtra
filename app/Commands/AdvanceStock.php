@@ -42,54 +42,47 @@ class AdvanceStock extends BaseCommand
         foreach ($experiments as $exp) {
             $processed++;
             $expdate = strtotime($exp['date']);
-            $day15 = date('Y-m-d', strtotime('+15 days', $expdate));
-            $day30 = date('Y-m-d', strtotime('+30 days', $expdate));
-            $day45 = date('Y-m-d', strtotime('+45 days', $expdate));
+            $daysSince = (int) floor((strtotime($today) - $expdate) / 86400);
 
             $db->transStart();
             try {
-                if ($today === $day15) {
+                // If the experiment is older than thresholds, catch up and move through stages
+                if ($daysSince >= 15) {
                     $spawns = $spawnModel->where('experiment_id', $exp['id'])->findAll();
                     if (! empty($spawns)) {
                         foreach ($spawns as &$row) {
                             $row['quantity'] = (float) $row['quantity'] * 0.30;
                             unset($row['id']);
                         }
-                        if (! empty($spawns)) {
-                            $fryModel->insertBatch($spawns);
-                            $spawnModel->where('experiment_id', $exp['id'])->delete();
-                            $moved['spawn_to_fry'] += count($spawns);
-                        }
+                        $fryModel->insertBatch($spawns);
+                        $spawnModel->where('experiment_id', $exp['id'])->delete();
+                        $moved['spawn_to_fry'] += count($spawns);
                     }
                 }
 
-                if ($today === $day30) {
+                if ($daysSince >= 30) {
                     $frys = $fryModel->where('experiment_id', $exp['id'])->findAll();
                     if (! empty($frys)) {
                         foreach ($frys as &$row) {
                             $row['quantity'] = (float) $row['quantity'] / 1.5;
                             unset($row['id']);
                         }
-                        if (! empty($frys)) {
-                            $semiModel->insertBatch($frys);
-                            $fryModel->where('experiment_id', $exp['id'])->delete();
-                            $moved['fry_to_semi'] += count($frys);
-                        }
+                        $semiModel->insertBatch($frys);
+                        $fryModel->where('experiment_id', $exp['id'])->delete();
+                        $moved['fry_to_semi'] += count($frys);
                     }
                 }
 
-                if ($today === $day45) {
+                if ($daysSince >= 45) {
                     $semis = $semiModel->where('experiment_id', $exp['id'])->findAll();
                     if (! empty($semis)) {
                         foreach ($semis as &$row) {
                             $row['quantity'] = (float) $row['quantity'] / 2;
                             unset($row['id']);
                         }
-                        if (! empty($semis)) {
-                            $fingerModel->insertBatch($semis);
-                            $semiModel->where('experiment_id', $exp['id'])->delete();
-                            $moved['semi_to_finger'] += count($semis);
-                        }
+                        $fingerModel->insertBatch($semis);
+                        $semiModel->where('experiment_id', $exp['id'])->delete();
+                        $moved['semi_to_finger'] += count($semis);
                     }
                 }
 

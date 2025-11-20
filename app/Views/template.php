@@ -170,7 +170,7 @@
                                 <?php if (function_exists('csrf_field')) { echo csrf_field(); } ?>
                                 <button class="btn btn-outline-primary btn-sm" type="submit" title="Run stock:advance (move spawn→fry→semi→fingerling)">
                                     <i class="fas fa-sync-alt"></i>
-                                    <span class="d-none d-lg-inline">Refresh Stock</span>
+                                    <span class="d-none d-lg-inline mt-2">Refresh Stock</span>
                                 </button>
                             </form>
                         </li>

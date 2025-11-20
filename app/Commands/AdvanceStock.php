@@ -19,11 +19,25 @@ class AdvanceStock extends BaseCommand
 
     public function run(array $params)
     {
+        $summary = $this->advance(true);
+        if ($summary) {
+            CLI::write($summary);
+        }
+    }
+
+    /**
+     * Advance stock between stages. When $logCli is false, avoids CLI output for web calls.
+     */
+    public function advance(bool $logCli = false): string
+    {
         $runId = bin2hex(random_bytes(4));
         $startedAt = date('Y-m-d H:i:s');
         log_message('info', "AdvanceStock run={$runId} started at {$startedAt}");
-        CLI::write("[AdvanceStock] run={$runId} started at {$startedAt}");
-        $db = Services::database();
+        if ($logCli) {
+            CLI::write("[AdvanceStock] run={$runId} started at {$startedAt}");
+        }
+
+        $db = db_connect();
         $experiments = (new Experiment())->select('id,date')->findAll();
         $today = date('Y-m-d');
 
@@ -90,7 +104,9 @@ class AdvanceStock extends BaseCommand
             } catch (\Throwable $e) {
                 $db->transRollback();
                 $msg = 'Error advancing stock for experiment ID ' . $exp['id'] . ': ' . $e->getMessage();
-                CLI::error($msg);
+                if ($logCli) {
+                    CLI::error($msg);
+                }
                 log_message('error', "AdvanceStock run={$runId} " . $msg);
             }
         }
@@ -98,7 +114,10 @@ class AdvanceStock extends BaseCommand
         $endedAt = date('Y-m-d H:i:s');
         $summary = 'Advance complete: ' . json_encode($moved) .
                    " | run={$runId} processed_experiments={$processed} finished_at={$endedAt}";
-        CLI::write($summary);
+        if ($logCli) {
+            CLI::write($summary);
+        }
         log_message('info', $summary);
+        return $summary;
     }
 }

@@ -22,7 +22,7 @@ jobs:
       # Install Composer Dependencies (for CI4)
       - name: Install Composer dependencies
         run: |
-          composer install --no-dev --optimize-autoloader
+          composer install 
 
       # Deploy to Hostinger via SSH (rsync over SSH)
       - name: Deploy via SSH
@@ -34,7 +34,7 @@ jobs:
           REMOTE_PORT: ${{ secrets.REMOTE_PORT }}
           SOURCE: "./"
           TARGET: ${{ secrets.REMOTE_DIR }}
-          ARGS: "-rltgoDzvO --delete"
+          ARGS: "-rltgoDzvO --delete --exclude=.env --exclude='writable/***' --exclude='uploads/***'"
 
       # Run CodeIgniter 4 Migrations on Hostinger
       - name: Run CI4 Migrations

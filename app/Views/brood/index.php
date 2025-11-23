@@ -3,11 +3,11 @@
         <div class="card-header py-3 d-flex justify-content-between align-items-center">
             <h6 class="m-0 font-weight-bold text-primary">Brood Stock</h6>
             <button type="button" class="btn btn-primary btn-sm" data-toggle="modal" data-target="#broodFormModal">
-                <?= isset($info) ? 'Edit Brood' : 'Add Brood' ?>
+                <?= !empty($info) ? 'Edit Brood' : 'Add Brood' ?>
             </button>
         </div>
         <div class="card-body">
-            <small class="text-muted">Use the button above to <?= isset($info) ? 'edit the selected' : 'add a new' ?> record.</small>
+            <small class="text-muted">Use the button above to <?= !empty($info) ? 'edit the selected' : 'add a new' ?> record.</small>
         </div>
     </div>
 </div>
@@ -17,7 +17,7 @@
   <div class="modal-dialog modal-lg" role="document">
     <div class="modal-content">
       <div class="modal-header">
-        <h5 class="modal-title" id="broodFormLabel"><?= isset($info) ? 'Edit Brood Stock' : 'Add Brood Stock' ?></h5>
+        <h5 class="modal-title" id="broodFormLabel"><?= !empty($info) ? 'Edit Brood Stock' : 'Add Brood Stock' ?></h5>
         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
           <span aria-hidden="true">&times;</span>
         </button>
@@ -66,7 +66,7 @@
   </div>
 </div>
 
-<?php if (isset($info)) { ?>
+<?php if (!empty($info)) { ?>
 <script>
   (function waitForJQ(){
     if (window.jQuery && window.jQuery.fn && window.jQuery.fn.modal) {

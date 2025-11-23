@@ -2,11 +2,11 @@
     <div class="card-header py-3 d-flex justify-content-between align-items-center">
         <h6 class="m-0 font-weight-bold text-primary">Experiment</h6>
         <button type="button" class="btn btn-primary btn-sm" data-toggle="modal" data-target="#experimentFormModal">
-            <?= isset($info) ? 'Edit Experiment' : 'Add Experiment' ?>
+            <?= !empty($info) ? 'Edit Experiment' : 'Add Experiment' ?>
         </button>
     </div>
     <div class="card-body">
-        <small class="text-muted">Use the button above to <?= isset($info) ? 'edit the selected' : 'add a new' ?> experiment.</small>
+        <small class="text-muted">Use the button above to <?= !empty($info) ? 'edit the selected' : 'add a new' ?> experiment.</small>
     </div>
 </div>
 
@@ -15,7 +15,7 @@
   <div class="modal-dialog" role="document">
     <div class="modal-content">
       <div class="modal-header">
-        <h5 class="modal-title" id="experimentFormLabel"><?= isset($info) ? 'Edit Experiment' : 'Add Experiment' ?></h5>
+        <h5 class="modal-title" id="experimentFormLabel"><?= !empty($info) ? 'Edit Experiment' : 'Add Experiment' ?></h5>
         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
           <span aria-hidden="true">&times;</span>
         </button>
@@ -45,7 +45,7 @@
   </div>
 </div>
 
-<?php if (isset($info)) { ?>
+<?php if (!empty($info)) { ?>
 <script>
   (function waitForJQ(){
     if (window.jQuery && window.jQuery.fn && window.jQuery.fn.modal) {

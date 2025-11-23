@@ -46,7 +46,7 @@ class Stock extends BaseController
     $fry = new Fry();
     $semi = new Semifingerling();
     $fingerling = new Fingerling();
-    $page['info'] = [];
+    $page['info'] = null;
     if ($action == 'delete') {
       $produce->delete($id);
     }
@@ -68,7 +68,7 @@ class Stock extends BaseController
     }
 
     // Info for edit form
-    $page['info'] = $produce->find($id);
+    $page['info'] = $id ? $produce->find($id) : null;
 
     $page['experiments'] = $expert->findAll();
     $page['data'] = $produce->select('productions.*,e.name,e.date,e.id as exp_id')->join('experiments as e', 'e.id = productions.experiment_id')->findAll();
@@ -80,7 +80,7 @@ class Stock extends BaseController
   public function experiment($id = null, $action = null)
   {
     $expert = new Experiment();
-    $page['info'] = [''];
+    $page['info'] = null;
     if ($action == 'delete') {
       $expert->delete($id);
     }

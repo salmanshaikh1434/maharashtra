@@ -147,7 +147,7 @@
                     </div>
 
                     <!-- Scripts for charts (Chart.js) -->
-                    <script src="/vendor/chart.js/Chart.min.js"></script>
+                    <script src="<?= base_url('vendor/chart.js/Chart.min.js') ?>"></script>
                     <script>
                         (function(){
                             var labels = <?= json_encode($revenue_labels ?? []) ?>;

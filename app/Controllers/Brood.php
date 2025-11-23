@@ -27,7 +27,7 @@ class Brood extends BaseController
             return redirect()->to('/brood');
         }
 
-        $page['info'] = $id ? $model->find($id) : [];
+        $page['info'] = $id ? $model->find($id) : null;
         $page['data'] = $model->orderBy('id','desc')->findAll();
         $data['page'] = view('brood/index', $page);
         return view('template', $data);
